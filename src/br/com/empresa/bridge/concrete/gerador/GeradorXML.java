@@ -18,13 +18,15 @@ public class GeradorXML implements GeradorArquivo {
             linha = linha.trim();
             if (linha.isEmpty()) continue;
 
-            if (!linha.contains(":")) {
-                // Linha de cabeçalho vira a tag <tipo>
-                xml.append("  <tipo>").append(linha).append("</tipo>\n");
-            } else if (linha.startsWith("-")) {
-                // Item de lista (ex: "- Notebook Dell")
+            if (linha.startsWith("-")) {
+                // Item de lista (ex: "- Notebook Dell") — verificado ANTES do contains(":")
                 String item = linha.substring(1).trim();
                 xml.append("  <item>").append(item).append("</item>\n");
+            } else if (linha.endsWith(":")) {
+                // Linha "Itens:" sem valor — ignorada, itens saem nas linhas seguintes
+            } else if (!linha.contains(":")) {
+                // Linha de cabeçalho (ex: "NOTA FISCAL") vira <tipo>
+                xml.append("  <tipo>").append(linha).append("</tipo>\n");
             } else {
                 // Campo normal: "Chave: Valor" vira <chave>Valor</chave>
                 int idx = linha.indexOf(":");
